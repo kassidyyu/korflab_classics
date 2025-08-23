@@ -21,7 +21,7 @@ parser.add_argument('-p', '--pfreq', type=str, default='ecoli',
 	help='protein frequencies [%(default)s]')
 arg = parser.parse_args()
 
-# amino acid frequency dictionary
+# amino acid frequency list
 aa_list = ['F', 'L', 'Y', 'H', 'Q', 'I', 'M', 'N', 'K', 'V', 
 		   'D', 'E', 'S', 'C', 'W', 'P', 'R', 'T', 'A', 'G']
 # based on GenScript Codon Usage Frequency Table(chart) Tool, freq/thousand
@@ -55,7 +55,8 @@ if arg.type == 'nt':
 			# need to implement user quality values
 else:
 	for i in range(arg.num):
-		if   arg.pfreq == 'flat5':
+		# generate random sequences, weights based on chosen proteome / flat5
+		if   arg.pfreq == 'flat5': # no weights, all equal
 			seq = random.choices(aa_list, k=int(arg.length))
 		elif arg.pfreq == 'ecoli':
 			seq = random.choices(aa_list, weights=ecoli_freq, k=int(arg.length))
@@ -68,4 +69,4 @@ else:
 			for j in range(len(seq) // arg.line):
 				print(''.join(seq[j:j+arg.line]))
 			if len(seq) % arg.line != 0: # leftover seq
-				print(''.join(seq[j*arg.line + arg.line:])) 
+				print(''.join(seq[j*arg.line + arg.line:]))
