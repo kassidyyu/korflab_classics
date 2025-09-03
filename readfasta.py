@@ -31,8 +31,10 @@ def faread(reader):
 			else:
 				seq.append(line)
 
+"""
 reader = faopen(filename)
 while True:
 	record = faread(reader)
 	if record == None: break
 	defline, seq = record
+"""
