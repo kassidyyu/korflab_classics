@@ -20,7 +20,9 @@ while True:
 	c = seq[:arg.window].count('C')
 	if g + c == 0: skew = 0
 	else:          skew = (g-c) / (g+c)
-	bedlist.append((skew, (g+c)/arg.window)) # tuple with skew & composition
+	comp = (g+c)/arg.window
+	# tuple with skew & composition rounded
+	bedlist.append((f'{skew:.4f}', f'{comp:.4f}')) 
 	for i in range(len(seq) - arg.window):
 		if   seq[i] == 'G':
 			g -= 1
@@ -32,8 +34,24 @@ while True:
 			c += 1
 		if g + c == 0: skew = 0
 		else:          skew = (g-c) / (g+c)
-		bedlist.append((skew, (g+c) / arg.window))
+		comp = (g+c)/arg.window
+		bedlist.append((f'{skew:.4f}', f'{comp:.4f}'))
 	# use deflines as keys (might change) to save all calculations
 	beddict[defline] = bedlist
 
-# write BED file
+# write BED file - GC comp & skew in name column
+with open('gcoutput.bed', 'w') as outfile:
+	# title
+	print('track name=gcCalcs description="GC skew and composition from FA"',
+		file=outfile)
+	# column titles
+	print('chrom', 'start', 'end', 'name_gc_skew_comp', sep='\t', 
+	   file=outfile) # s##_c##
+	for defline, tlist in beddict.items():
+		defline = defline.split()
+		chrom = defline[0]
+		for i in range(len(tlist)):
+			print(chrom, i, i+arg.window, sep='\t', end='\t', file=outfile)
+			sc = tlist[i]
+			print('s', sc[0], '_c', sc[1], sep='', file=outfile)
+outfile.close()
